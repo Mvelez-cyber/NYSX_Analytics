@@ -1,0 +1,1 @@
+FINNHUB_API_KEY = "d0ptnvpr01qgccubb84gd0ptnvpr01qgccubb850"

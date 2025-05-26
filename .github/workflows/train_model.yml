@@ -21,8 +21,9 @@ jobs:
     - name: 📦 Instalar dependencias
       run: pip install -r requirements.txt
 
-    - name: 🔐 Definir FINNHUB_API_KEY
+    - name: Definir FINNHUB_API_KEY
       run: echo "FINNHUB_API_KEY=${{ secrets.FINNHUB_API_KEY }}" >> $GITHUB_ENV
+
 
     - name: 🚀 Ejecutar actualización diaria
       run: python daily_model_update.py

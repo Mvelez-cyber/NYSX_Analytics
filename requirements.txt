@@ -1,7 +1,7 @@
 streamlit
 requests
+plotly==5.20.0
 pandas
-plotly
-statsmodels
 joblib
 python-dotenv
+statsmodels==0.14.0

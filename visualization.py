@@ -11,16 +11,12 @@ def plot_candlestick(df):
     )])
     
     fig.update_layout(
-        title="Gráfico de Velas (Datos Simulados)",
+        title="Gráfico de Velas - Datos Históricos",
         xaxis_title="Fecha",
         yaxis_title="Precio",
         xaxis_rangeslider_visible=False,
         template="plotly_white"
     )
-    
-    # Agregar línea de precio actual
-    fig.add_hline(y=df['close'].iloc[-1], line_dash="dash", line_color="red",
-                  annotation_text="Precio Actual", annotation_position="right")
     
     return fig
 
@@ -34,7 +30,7 @@ def plot_forecast_with_confidence(history, forecast, conf):
         x=history.index,
         y=history,
         name='Histórico',
-        line=dict(color='blue')
+        line=dict(color='blue', width=2)
     ))
     
     # Predicción
@@ -42,7 +38,7 @@ def plot_forecast_with_confidence(history, forecast, conf):
         x=forecast_index,
         y=forecast,
         name='Predicción',
-        line=dict(color='green')
+        line=dict(color='green', width=2)
     ))
     
     # Intervalos de confianza
@@ -63,10 +59,11 @@ def plot_forecast_with_confidence(history, forecast, conf):
     ))
     
     fig.update_layout(
-        title="Predicción con Intervalos de Confianza",
+        title="Predicción de Precios con Intervalos de Confianza",
         xaxis_title="Fecha",
         yaxis_title="Precio",
-        template="plotly_white"
+        template="plotly_white",
+        showlegend=True
     )
     
     return fig

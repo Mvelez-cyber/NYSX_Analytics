@@ -1,3 +1,4 @@
+from config import API_KEY
 import requests
 import pandas as pd
 from config import API_KEY

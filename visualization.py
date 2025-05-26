@@ -67,80 +67,73 @@ def plot_forecast_with_confidence(history, forecast, conf):
     lower_bound = forecast - confidence_range
     upper_bound = forecast + confidence_range
 
+    # --- Estilo similar al gráfico de la imagen proporcionada ---
     fig = go.Figure()
 
-    # Datos históricos
+    # Línea histórica (color púrpura, igual que la imagen)
     fig.add_trace(go.Scatter(
         x=history.index,
         y=history,
-        name='Histórico',
-        line=dict(color='blue', width=2)
+        line=dict(color='purple', width=2),
+        name='Histórico'
     ))
 
-    # Predicción
+    # Línea de predicción (púrpura, pero con mayor grosor y dash para diferenciar)
     fig.add_trace(go.Scatter(
         x=forecast_index,
         y=forecast,
-        name='Predicción',
-        line=dict(color='green', width=2)
+        mode='lines',
+        line=dict(color='purple', width=3, dash='dash'),
+        name='Predicción'
     ))
 
-    # Nuevos intervalos de confianza
+    # Banda de confianza (relleno suave, color púrpura claro, sin bordes)
     fig.add_trace(go.Scatter(
-        x=forecast_index,
-        y=lower_bound,
-        name='Confianza Baja (-10%)',
-        line=dict(dash='dot', color='lightblue'),
-        fill=None
+        x=np.concatenate([forecast_index, forecast_index[::-1]]),
+        y=np.concatenate([upper_bound, lower_bound[::-1]]),
+        fill='toself',
+        fillcolor='rgba(128, 0, 128, 0.15)',  # púrpura claro y translúcido
+        line=dict(color='rgba(255,255,255,0)'),
+        hoverinfo="skip",
+        showlegend=True,
+        name='Intervalo de Confianza (±10%)'
     ))
 
-    fig.add_trace(go.Scatter(
-        x=forecast_index,
-        y=upper_bound,
-        name='Confianza Alta (+10%)',
-        line=dict(dash='dot', color='lightblue'),
-        fill='tonexty'
-    ))
-
-    # Ajustar el rango del eje Y para que sea comprensible (solo miles de dólares)
-    # Se calcula el mínimo y máximo considerando los datos históricos y la predicción
-    min_y = min(np.min(history), np.min(lower_bound))
-    max_y = max(np.max(history), np.max(upper_bound))
-    # Redondear a miles para mayor claridad
-    min_y = max(0, (int(min_y) // 1000) * 1000)
-    max_y = ((int(max_y) // 1000) + 1) * 1000
-
+    # Configuración del layout para que se vea limpio y similar a la imagen
     fig.update_layout(
         title="Predicción de Precios con Intervalos de Confianza (±10%) - Próximos 7 Días Laborables",
         xaxis_title="Fecha",
         yaxis_title="Precio (USD)",
-        template="plotly_white",
+        template="simple_white",
         showlegend=True,
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1
+        ),
         hovermode='x unified',
         xaxis=dict(
             type='date',
-            tickformat='%Y-%m-%d',
-            tickmode='auto',
-            nticks=10,
-            tickangle=45
+            tickformat='%b\n%Y',  # Formato similar al de la imagen
+            showgrid=False,
+            showline=True,
+            linecolor='rgba(0,0,0,0.2)',
+            mirror=True
         ),
         yaxis=dict(
-            range=[min_y, max_y],
-            tickformat="$.0f"  # Mostrar solo miles, sin notación científica
-        )
+            showgrid=False,
+            showline=True,
+            linecolor='rgba(0,0,0,0.2)',
+            mirror=True
+        ),
+        plot_bgcolor='white',
+        paper_bgcolor='white',
+        font=dict(color='black')
     )
 
-    # Agregar anotación con el rango de confianza
-    fig.add_annotation(
-        x=forecast_index[0],
-        y=upper_bound[0],
-        text=f"Rango de confianza: ±${confidence_range:.2f}",
-        showarrow=True,
-        arrowhead=1,
-        ax=0,
-        ay=-40
-    )
-
+    # No mostrar anotaciones ni elementos adicionales para mantener el estilo limpio
     return fig
 
 def plot_price_line(df):

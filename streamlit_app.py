@@ -50,45 +50,37 @@ if company_name:
                 if not info:
                     raise Exception("No se pudo obtener información de la empresa")
                 
-                # Mostrar información de la empresa en columnas
-                col1, col2, col3, col4 = st.columns(4)
-                
+                # Organizar la vista: datos a la izquierda, velas a la derecha
+                col1, col2 = st.columns([1,2])
                 with col1:
-                    st.metric(
-                        "Precio Actual",
-                        f"${info.get('currentPrice', 'N/A'):.2f}",
-                        f"{info.get('regularMarketChangePercent', 0):.2f}%"
-                    )
-                
-                with col2:
-                    st.metric(
-                        "Capitalización",
-                        f"${info.get('marketCap', 0)/1e9:.2f}B"
-                    )
-                
-                with col3:
-                    st.metric(
-                        "Volumen",
-                        f"{info.get('regularMarketVolume', 0):,}"
-                    )
-                
-                with col4:
-                    st.metric(
-                        "Sector",
+                    st.markdown("""
+                    <div style='background-color:#18191A; padding: 20px; border-radius: 10px;'>
+                    <h3 style='color:white;'>Datos de la Empresa</h3>
+                    <p style='color:white;'><b>Precio Actual:</b> ${:.2f} <span style='color:{};'>{}</span></p>
+                    <p style='color:white;'><b>Capitalización:</b> ${:.2f}B</p>
+                    <p style='color:white;'><b>Volumen:</b> {:,}</p>
+                    <p style='color:white;'><b>Sector:</b> {}</p>
+                    </div>
+                    """.format(
+                        info.get('currentPrice', 0),
+                        'red' if info.get('regularMarketChangePercent', 0) < 0 else 'lightgreen',
+                        f"{info.get('regularMarketChangePercent', 0):.2f}%",
+                        info.get('marketCap', 0)/1e9,
+                        int(info.get('regularMarketVolume', 0)),
                         info.get('sector', 'N/A')
-                    )
-                
-                # Mostrar datos históricos
-                df = get_historical_data(symbol)
-                st.plotly_chart(plot_candlestick(df), use_container_width=True)
+                    ), unsafe_allow_html=True)
+                with col2:
+                    df = get_historical_data(symbol)
+                    st.plotly_chart(plot_candlestick(df), use_container_width=True)
 
-                # Entrenar modelo y predecir
+                # Gráfico de predicción al final, ocupando todo el ancho
+                st.markdown("---")
                 model = train_sarimax_model(df['close'])
                 forecast = forecast_with_confidence(model)
                 st.plotly_chart(plot_forecast_with_confidence(df['close'], *forecast), use_container_width=True)
 
             except Exception as e:
-                st.error(f"Error al obtener datos: {str(e)}")
+                st.error(f"Error al obtener datos: {e}")
                 st.info("""
                 Si el error persiste, intenta:
                 1. Verificar que el símbolo sea correcto

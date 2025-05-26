@@ -1,35 +1,33 @@
-# data_loader.py
 import requests
 import pandas as pd
-from config import FINNHUB_API_KEY
+from config import API_KEY
 from datetime import datetime, timedelta
 
-def get_stock_data(symbol, resolution='D', days=365):
+def get_stock_data(symbol, days=180):
     end = int(datetime.now().timestamp())
     start = int((datetime.now() - timedelta(days=days)).timestamp())
 
     url = f"https://finnhub.io/api/v1/stock/candle"
     params = {
-        "symbol": symbol,
-        "resolution": resolution,
-        "from": start,
-        "to": end,
-        "token": FINNHUB_API_KEY
+        'symbol': symbol.upper(),
+        'resolution': 'D',
+        'from': start,
+        'to': end,
+        'token': API_KEY
     }
 
-    response = requests.get(url, params=params)
-    data = response.json()
+    response = requests.get(url, params=params).json()
 
-    if data['s'] != 'ok':
-        raise Exception("Error fetching data from Finnhub API")
+    if response.get('s') != 'ok':
+        raise ValueError("Error al obtener datos de Finnhub")
 
     df = pd.DataFrame({
-        'time': pd.to_datetime(data['t'], unit='s'),
-        'open': data['o'],
-        'high': data['h'],
-        'low': data['l'],
-        'close': data['c'],
-        'volume': data['v']
+        'timestamp': pd.to_datetime(response['t'], unit='s'),
+        'open': response['o'],
+        'high': response['h'],
+        'low': response['l'],
+        'close': response['c'],
+        'volume': response['v']
     })
-
-    return df.set_index('time')
+    df.set_index('timestamp', inplace=True)
+    return df

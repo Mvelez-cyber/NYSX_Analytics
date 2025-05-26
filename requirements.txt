@@ -4,4 +4,4 @@ pandas
 plotly
 statsmodels
 joblib
-python-dateutil
+python-dotenv

@@ -16,39 +16,68 @@ Las predicciones se basan en estos datos simulados y deben tomarse como referenc
 """)
 
 # Buscar empresa
-company_name = st.text_input("🔍 Ingresa el símbolo de la acción (ej: AAPL, MSFT, GOOGL):", "")
+company_name = st.text_input("🔍 Ingresa el nombre de la empresa (ej: Apple, Microsoft, Google):", "")
 
 if company_name:
-    matches = search_company(company_name)
+    with st.spinner('Buscando empresas...'):
+        matches = search_company(company_name)
 
     if not matches:
-        st.error("No se encontró la acción. Verifica el símbolo e intenta de nuevo.")
+        st.error("No se encontraron empresas. Intenta con otro nombre.")
     else:
-        symbol = matches[0]['symbol']
+        # Crear un selector con información detallada
+        options = [f"{m['symbol']} - {m['description']} ({m['exchange']})" for m in matches]
+        selected_option = st.selectbox(
+            "Selecciona la empresa:",
+            options,
+            format_func=lambda x: x
+        )
         
-        try:
-            # Mostrar datos históricos
-            df = get_historical_data(symbol)
+        if selected_option:
+            # Extraer el símbolo de la opción seleccionada
+            symbol = selected_option.split(' - ')[0]
             
-            # Mostrar información básica de la empresa
-            ticker = yf.Ticker(symbol)
-            info = ticker.info
-            
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                st.metric("Precio Actual", f"${info.get('currentPrice', 'N/A'):.2f}")
-            with col2:
-                st.metric("Cambio %", f"{info.get('regularMarketChangePercent', 'N/A'):.2f}%")
-            with col3:
-                st.metric("Volumen", f"{info.get('regularMarketVolume', 'N/A'):,}")
-            
-            # Gráfico de velas
-            st.plotly_chart(plot_candlestick(df), use_container_width=True)
+            try:
+                # Obtener información detallada de la empresa
+                ticker = yf.Ticker(symbol)
+                info = ticker.info
+                
+                # Mostrar información de la empresa en columnas
+                col1, col2, col3, col4 = st.columns(4)
+                
+                with col1:
+                    st.metric(
+                        "Precio Actual",
+                        f"${info.get('currentPrice', 'N/A'):.2f}",
+                        f"{info.get('regularMarketChangePercent', 0):.2f}%"
+                    )
+                
+                with col2:
+                    st.metric(
+                        "Capitalización",
+                        f"${info.get('marketCap', 0)/1e9:.2f}B"
+                    )
+                
+                with col3:
+                    st.metric(
+                        "Volumen",
+                        f"{info.get('regularMarketVolume', 0):,}"
+                    )
+                
+                with col4:
+                    st.metric(
+                        "Sector",
+                        info.get('sector', 'N/A')
+                    )
+                
+                # Mostrar datos históricos
+                df = get_historical_data(symbol)
+                st.plotly_chart(plot_candlestick(df), use_container_width=True)
 
-            # Entrenar modelo y predecir
-            model = train_sarimax_model(df['close'])
-            forecast = forecast_with_confidence(model)
-            st.plotly_chart(plot_forecast_with_confidence(df['close'], *forecast), use_container_width=True)
+                # Entrenar modelo y predecir
+                model = train_sarimax_model(df['close'])
+                forecast = forecast_with_confidence(model)
+                st.plotly_chart(plot_forecast_with_confidence(df['close'], *forecast), use_container_width=True)
 
-        except Exception as e:
-            st.error(f"Error al obtener datos: {e}")
+            except Exception as e:
+                st.error(f"Error al obtener datos: {e}")

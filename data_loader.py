@@ -4,11 +4,26 @@ from datetime import datetime, timedelta
 
 def search_company(name):
     try:
-        # yfinance no tiene una función de búsqueda directa, así que usamos Ticker
-        ticker = yf.Ticker(name)
-        info = ticker.info
-        return [{'symbol': name, 'description': info.get('longName', name)}]
-    except Exception:
+        # Buscar usando yfinance
+        tickers = yf.Tickers(name)
+        results = []
+        
+        # Obtener información de cada ticker encontrado
+        for ticker in tickers.tickers:
+            try:
+                info = tickers.tickers[ticker].info
+                if info and 'longName' in info:
+                    results.append({
+                        'symbol': ticker,
+                        'description': info['longName'],
+                        'exchange': info.get('exchange', 'N/A'),
+                        'sector': info.get('sector', 'N/A')
+                    })
+            except:
+                continue
+                
+        return results
+    except Exception as e:
         return []
 
 def get_historical_data(symbol):
@@ -28,6 +43,9 @@ def get_historical_data(symbol):
             'Low': 'low',
             'Close': 'close'
         })
+        
+        # Filtrar solo días laborables (lunes a viernes)
+        df = df[df.index.dayofweek < 5]  # 0-4 son lunes a viernes
         
         return df[['open', 'high', 'low', 'close']]
     except Exception as e:

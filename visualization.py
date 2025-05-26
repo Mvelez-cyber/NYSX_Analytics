@@ -26,13 +26,20 @@ def plot_candlestick(df):
         xaxis_title="Fecha",
         yaxis_title="Precio",
         xaxis_rangeslider_visible=False,
-        template="plotly_white",
+        template="plotly_dark",
+        plot_bgcolor='black',
+        paper_bgcolor='black',
+        font=dict(color='white'),
         xaxis=dict(
             type='date',
             tickformat='%Y-%m-%d',
             tickmode='auto',
             nticks=10,
-            tickangle=45
+            tickangle=45,
+            color='white'
+        ),
+        yaxis=dict(
+            color='white'
         )
     )
     
@@ -153,17 +160,19 @@ def plot_price_line(df):
         title="Precio Histórico de Cierre",
         xaxis_title="Fecha",
         yaxis_title="Precio",
-        template="plotly_dark",  # Fondo oscuro
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)',
+        template="plotly_dark",
+        plot_bgcolor='black',
+        paper_bgcolor='black',
         font=dict(color='white'),
         xaxis=dict(
             showgrid=False,
-            tickformat='%b %Y'
+            tickformat='%b %Y',
+            color='white'
         ),
         yaxis=dict(
             showgrid=True,
-            gridcolor='rgba(255,255,255,0.1)'
+            gridcolor='rgba(255,255,255,0.1)',
+            color='white'
         )
     )
     return fig

@@ -1,7 +1,7 @@
 import websocket
 import json
 import threading
-from config import FINNHUB_API_KEY
+from config import API_KEY
 
 def start_websocket_thread(symbol, placeholder):
     def on_message(ws, message):
@@ -16,7 +16,7 @@ def start_websocket_thread(symbol, placeholder):
         ws.send(json.dumps({"type": "subscribe", "symbol": symbol}))
 
     def run():
-        ws = websocket.WebSocketApp(f"wss://ws.finnhub.io?token={FINNHUB_API_KEY}",
+        ws = websocket.WebSocketApp(f"wss://ws.finnhub.io?token={API_KEY}",
                                     on_message=on_message,
                                     on_error=on_error,
                                     on_close=on_close)

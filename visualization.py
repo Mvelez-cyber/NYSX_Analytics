@@ -115,3 +115,32 @@ def plot_forecast_with_confidence(history, forecast, conf):
     )
     
     return fig
+
+def plot_price_line(df):
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=df.index,
+        y=df['close'],
+        mode='lines',
+        line=dict(color='purple', width=2),
+        name='Precio de Cierre'
+    ))
+
+    fig.update_layout(
+        title="Precio Histórico de Cierre",
+        xaxis_title="Fecha",
+        yaxis_title="Precio",
+        template="plotly_dark",  # Fondo oscuro
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)',
+        font=dict(color='white'),
+        xaxis=dict(
+            showgrid=False,
+            tickformat='%b %Y'
+        ),
+        yaxis=dict(
+            showgrid=True,
+            gridcolor='rgba(255,255,255,0.1)'
+        )
+    )
+    return fig

@@ -201,6 +201,38 @@ def plot_forecast_with_confidence(history, forecast, conf):
     
     return fig
 
-# Mostrar datos históricos
-df = get_historical_data(symbol)
-st.plotly_chart(plot_price_line(df), use_container_width=True)
+st.set_page_config(page_title="NYSE Stock Forecast Dashboard", layout="wide")
+st.title("📈 NYSE Stock Forecast Dashboard")
+
+st.info("""
+💡 **Nota Importante:** Los datos históricos mostrados son reales y provienen de Yahoo Finance. Las predicciones se basan en modelos estadísticos y deben tomarse como referencia únicamente.
+""")
+
+# Buscar empresa
+company_name = st.text_input("🔍 Ingresa el nombre de la empresa o símbolo (ej: Apple, AAPL, Microsoft, MSFT):", "")
+
+if company_name:
+    with st.spinner('Buscando empresas...'):
+        matches = search_company(company_name)
+
+    if not matches:
+        st.error("No se encontraron empresas. Intenta con otro nombre.")
+    else:
+        # Crear un selector con información detallada
+        options = [f"{m['symbol']} - {m['description']}" for m in matches]
+        selected_option = st.selectbox(
+            "Selecciona la empresa:",
+            options,
+            format_func=lambda x: x
+        )
+        
+        if selected_option:
+            # Extraer el símbolo de la opción seleccionada
+            symbol = selected_option.split(' - ')[0]
+            
+            try:
+                # Mostrar datos históricos
+                df = get_historical_data(symbol)
+                st.plotly_chart(plot_price_line(df), use_container_width=True)
+            except Exception as e:
+                st.error(f"Error al obtener datos: {e}")

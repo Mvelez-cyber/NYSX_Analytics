@@ -3,32 +3,25 @@ import requests
 import pandas as pd
 from config import API_KEY
 from datetime import datetime, timedelta
+import finnhub
+import os
 
-def get_stock_data(symbol, days=180):
-    end = int(datetime.now().timestamp())
-    start = int((datetime.now() - timedelta(days=days)).timestamp())
+finnhub_client = finnhub.Client(api_key=os.getenv("FINNHUB_API_KEY"))
 
-    url = f"https://finnhub.io/api/v1/stock/candle"
-    params = {
-        'symbol': symbol.upper(),
-        'resolution': 'D',
-        'from': start,
-        'to': end,
-        'token': API_KEY
-    }
+def get_stock_data(symbol):
+    now = int(datetime.now().timestamp())
+    last_year = int((datetime.now() - timedelta(days=365)).timestamp())
+    res = finnhub_client.stock_candles(symbol, 'D', last_year, now)
 
-    response = requests.get(url, params=params).json()
-
-    if response.get('s') != 'ok':
-        raise ValueError("Error al obtener datos de Finnhub")
+    if res['s'] != 'ok':
+        raise Exception("No se pudo obtener el historial")
 
     df = pd.DataFrame({
-        'timestamp': pd.to_datetime(response['t'], unit='s'),
-        'open': response['o'],
-        'high': response['h'],
-        'low': response['l'],
-        'close': response['c'],
-        'volume': response['v']
+        'time': pd.to_datetime(res['t'], unit='s'),
+        'open': res['o'],
+        'high': res['h'],
+        'low': res['l'],
+        'close': res['c']
     })
-    df.set_index('timestamp', inplace=True)
+    df.set_index('time', inplace=True)
     return df

@@ -54,7 +54,7 @@ if company_name:
                 df = get_historical_data(symbol)
                 df = df.dropna(subset=['open', 'high', 'low', 'close'])
 
-                # Contenedor flex para igualar altura
+                # Contenedor flex para igualar altura y poner el gráfico en la barra horizontal
                 st.markdown("""
                 <div style='display: flex; flex-direction: row; gap: 32px; align-items: stretch; width: 100%;'>
                     <div style='background: #18191A; padding: 40px 20px; border-radius: 24px; box-shadow: 0 4px 24px 0 rgba(0,0,0,0.25); color: white; font-size: 1.1rem; font-family: "Segoe UI", Arial, sans-serif; min-width: 320px; max-width: 400px; flex: 1; display: flex; flex-direction: column; justify-content: center;'>
@@ -66,8 +66,14 @@ if company_name:
                     </div>
                     <div style='background-color: #18191A; border-radius: 24px; box-shadow: 0 4px 24px 0 rgba(0,0,0,0.25); padding: 18px; flex: 3; display: flex; flex-direction: column; justify-content: center;'>
                         <div style='height: 100%;'>
-                            <!-- Aquí va el gráfico de velas -->
-                            """, unsafe_allow_html=True)
+                """.format(
+                        info.get('currentPrice', 0),
+                        'red' if info.get('regularMarketChangePercent', 0) < 0 else 'lightgreen',
+                        f"{info.get('regularMarketChangePercent', 0):.2f}%",
+                        info.get('marketCap', 0)/1e9,
+                        int(info.get('regularMarketVolume', 0)),
+                        info.get('sector', 'N/A')
+                    ), unsafe_allow_html=True)
                 st.plotly_chart(plot_candlestick(df), use_container_width=True)
                 st.markdown("""
                         </div>

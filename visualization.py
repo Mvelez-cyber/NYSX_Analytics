@@ -93,48 +93,50 @@ def plot_forecast_with_confidence(history, forecast, conf):
         x=np.concatenate([forecast_index, forecast_index[::-1]]),
         y=np.concatenate([upper_bound, lower_bound[::-1]]),
         fill='toself',
-        fillcolor='rgba(128, 0, 128, 0.15)',  # púrpura claro y translúcido
+        fillcolor='rgba(128, 0, 128, 0.18)',  # púrpura claro y translúcido
         line=dict(color='rgba(255,255,255,0)'),
         hoverinfo="skip",
         showlegend=True,
         name='Intervalo de Confianza (±10%)'
     ))
 
-    # Configuración del layout para que se vea limpio y similar a la imagen
+    # Configuración del layout para fondo negro y estilo similar a la imagen
     fig.update_layout(
         title="Predicción de Precios con Intervalos de Confianza (±10%) - Próximos 7 Días Laborables",
         xaxis_title="Fecha",
         yaxis_title="Precio (USD)",
-        template="simple_white",
+        template="plotly_dark",
         showlegend=True,
         legend=dict(
             orientation="h",
             yanchor="bottom",
             y=1.02,
             xanchor="right",
-            x=1
+            x=1,
+            font=dict(color='white')
         ),
         hovermode='x unified',
         xaxis=dict(
             type='date',
-            tickformat='%b\n%Y',  # Formato similar al de la imagen
+            tickformat='%b\n%Y',
             showgrid=False,
             showline=True,
-            linecolor='rgba(0,0,0,0.2)',
-            mirror=True
+            linecolor='rgba(255,255,255,0.2)',
+            mirror=True,
+            color='white'
         ),
         yaxis=dict(
             showgrid=False,
             showline=True,
-            linecolor='rgba(0,0,0,0.2)',
-            mirror=True
+            linecolor='rgba(255,255,255,0.2)',
+            mirror=True,
+            color='white'
         ),
-        plot_bgcolor='white',
-        paper_bgcolor='white',
-        font=dict(color='black')
+        plot_bgcolor='black',
+        paper_bgcolor='black',
+        font=dict(color='white')
     )
 
-    # No mostrar anotaciones ni elementos adicionales para mantener el estilo limpio
     return fig
 
 def plot_price_line(df):

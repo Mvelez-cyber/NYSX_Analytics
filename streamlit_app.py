@@ -54,12 +54,18 @@ if company_name:
                 col1, col2 = st.columns([1,2])
                 with col1:
                     st.markdown("""
-                    <div style='background-color:#18191A; padding: 20px; border-radius: 10px;'>
-                    <h3 style='color:white;'>Datos de la Empresa</h3>
-                    <p style='color:white;'><b>Precio Actual:</b> ${:.2f} <span style='color:{};'>{}</span></p>
-                    <p style='color:white;'><b>Capitalización:</b> ${:.2f}B</p>
-                    <p style='color:white;'><b>Volumen:</b> {:,}</p>
-                    <p style='color:white;'><b>Sector:</b> {}</p>
+                    <div style='background: linear-gradient(135deg, #3a1c71 0%, #d76d77 50%, #ffaf7b 100%); 
+                                padding: 30px 20px 30px 20px; 
+                                border-radius: 18px; 
+                                box-shadow: 0 4px 24px 0 rgba(0,0,0,0.25); 
+                                color: white; 
+                                font-size: 1.2rem; 
+                                font-family: "Segoe UI", Arial, sans-serif;'>
+                        <h2 style='color:white; margin-bottom: 1.5rem;'>Datos de la Empresa</h2>
+                        <p style='font-size:1.3rem;'><b>Precio Actual:</b> ${:.2f} <span style='color:{}; font-size:1.1rem;'>{}</span></p>
+                        <p style='font-size:1.1rem;'><b>Capitalización:</b> ${:.2f}B</p>
+                        <p style='font-size:1.1rem;'><b>Volumen:</b> {:,}</p>
+                        <p style='font-size:1.1rem;'><b>Sector:</b> {}</p>
                     </div>
                     """.format(
                         info.get('currentPrice', 0),
@@ -70,8 +76,12 @@ if company_name:
                         info.get('sector', 'N/A')
                     ), unsafe_allow_html=True)
                 with col2:
+                    st.markdown("""
+                    <div style='background-color: #18191A; border-radius: 22px; box-shadow: 0 4px 24px 0 rgba(0,0,0,0.25); padding: 18px;'>
+                    """, unsafe_allow_html=True)
                     df = get_historical_data(symbol)
                     st.plotly_chart(plot_candlestick(df), use_container_width=True)
+                    st.markdown("</div>", unsafe_allow_html=True)
 
                 # Gráfico de predicción al final, ocupando todo el ancho
                 st.markdown("---")

@@ -13,6 +13,9 @@ def plot_candlestick(df):
         df.index = pd.to_datetime(df.index)
         df_filtrado = df[df.index.dayofweek < 5]
 
+    # Eliminar filas con datos faltantes en OHLC
+    df_filtrado = df_filtrado.dropna(subset=['open', 'high', 'low', 'close'])
+
     fig = go.Figure(data=[go.Candlestick(
         x=df_filtrado.index,
         open=df_filtrado['open'],

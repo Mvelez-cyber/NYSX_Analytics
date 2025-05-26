@@ -13,7 +13,7 @@ def search_company(name):
         return []
 
 def get_historical_data(symbol):
-    res = finnhub_client.stock_candle(symbol, 'D', 1617753600, 1704067200)
+    res = finnhub_client.stock_candles(symbol, 'D', 1617753600, 1704067200)
     df = pd.DataFrame(res)
     df['t'] = pd.to_datetime(df['t'], unit='s')
     df.set_index('t', inplace=True)

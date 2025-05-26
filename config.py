@@ -1,9 +1,8 @@
 import os
-from dotenv import load_dotenv
+import streamlit as st
 
-load_dotenv()
+api_key = os.getenv("NOMBRE_SECRETO")
 
-API_KEY = os.getenv("FINNHUB_API_KEY")
-
-if API_KEY is None:
-    raise ValueError("La variable FINNHUB_API_KEY no está configurada.")
+if not api_key:
+    st.warning("No se detectó la llave API. Esta app solo funciona correctamente en Streamlit Cloud.")
+    # Puedes hacer st.stop() o cargar modo demo, según quieras.

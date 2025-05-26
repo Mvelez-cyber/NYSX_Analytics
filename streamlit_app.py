@@ -54,26 +54,32 @@ if company_name:
                 df = get_historical_data(symbol)
                 df = df.dropna(subset=['open', 'high', 'low', 'close'])
 
-                # Mostrar solo el bloque de datos estilizado arriba
+                # Mostrar los datos de la empresa a la izquierda y el gráfico a la derecha en la misma fila
                 st.markdown("""
-                <div style='background: #18191A; padding: 40px 20px; border-radius: 24px; box-shadow: 0 4px 24px 0 rgba(0,0,0,0.25); color: white; font-size: 1.1rem; font-family: "Segoe UI", Arial, sans-serif; min-width: 320px; max-width: 400px; margin-bottom: 32px;'>
-                    <h2 style='color:white; margin-bottom: 2rem;'>Datos de la Empresa</h2>
-                    <p style='font-size:1.2rem;'><b>Precio Actual:</b> ${:.2f} <span style='color:{}; font-size:1.1rem;'>{}</span></p>
-                    <p style='font-size:1.1rem;'><b>Capitalización:</b> ${:.2f}B</p>
-                    <p style='font-size:1.1rem;'><b>Volumen:</b> {:,}</p>
-                    <p style='font-size:1.1rem;'><b>Sector:</b> {}</p>
-                </div>
+                <div style='display: flex; flex-direction: row; gap: 32px; align-items: stretch; width: 100%;'>
+                    <div style='background: #18191A; padding: 40px 20px; border-radius: 24px; box-shadow: 0 4px 24px 0 rgba(0,0,0,0.25); color: white; font-size: 1.1rem; font-family: "Segoe UI", Arial, sans-serif; min-width: 320px; max-width: 400px; flex: 1; display: flex; flex-direction: column; justify-content: center;'>
+                        <h2 style='color:white; margin-bottom: 2rem;'>Datos de la Empresa</h2>
+                        <p style='font-size:1.2rem;'><b>Precio Actual:</b> ${:.2f} <span style='color:{}; font-size:1.1rem;'>{}</span></p>
+                        <p style='font-size:1.1rem;'><b>Capitalización:</b> ${:.2f}B</p>
+                        <p style='font-size:1.1rem;'><b>Volumen:</b> {:,}</p>
+                        <p style='font-size:1.1rem;'><b>Sector:</b> {}</p>
+                    </div>
+                    <div style='flex: 3; display: flex; flex-direction: column; justify-content: center;'>
+                        <div style='height: 100%;'>
                 """.format(
-                    info.get('currentPrice', 0),
-                    'red' if info.get('regularMarketChangePercent', 0) < 0 else 'lightgreen',
-                    f"{info.get('regularMarketChangePercent', 0):.2f}%",
-                    info.get('marketCap', 0)/1e9,
-                    int(info.get('regularMarketVolume', 0)),
-                    info.get('sector', 'N/A')
-                ), unsafe_allow_html=True)
-
-                # Mostrar el gráfico de velas debajo, ocupando todo el ancho
+                        info.get('currentPrice', 0),
+                        'red' if info.get('regularMarketChangePercent', 0) < 0 else 'lightgreen',
+                        f"{info.get('regularMarketChangePercent', 0):.2f}%",
+                        info.get('marketCap', 0)/1e9,
+                        int(info.get('regularMarketVolume', 0)),
+                        info.get('sector', 'N/A')
+                    ), unsafe_allow_html=True)
                 st.plotly_chart(plot_candlestick(df), use_container_width=True)
+                st.markdown("""
+                        </div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
 
                 # Gráfico de predicción al final, ocupando todo el ancho
                 st.markdown("---")

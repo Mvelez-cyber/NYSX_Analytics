@@ -5,3 +5,4 @@ pandas
 statsmodels
 websocket-client
 streamlit-extras
+numpy

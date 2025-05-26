@@ -9,17 +9,64 @@ def plot_candlestick(df):
         low=df['low'],
         close=df['close']
     )])
-    fig.update_layout(title="Candlestick Chart", xaxis_rangeslider_visible=False)
+    
+    fig.update_layout(
+        title="Gráfico de Velas (Datos Simulados)",
+        xaxis_title="Fecha",
+        yaxis_title="Precio",
+        xaxis_rangeslider_visible=False,
+        template="plotly_white"
+    )
+    
+    # Agregar línea de precio actual
+    fig.add_hline(y=df['close'].iloc[-1], line_dash="dash", line_color="red",
+                  annotation_text="Precio Actual", annotation_position="right")
+    
     return fig
 
 def plot_forecast_with_confidence(history, forecast, conf):
     forecast_index = pd.date_range(start=history.index[-1], periods=len(forecast)+1, freq='D')[1:]
+    
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=history.index, y=history, name='Histórico'))
-    fig.add_trace(go.Scatter(x=forecast_index, y=forecast, name='Predicción'))
-    fig.add_trace(go.Scatter(x=forecast_index, y=conf.iloc[:, 0], name='Confianza Baja',
-                             line=dict(dash='dot'), marker=dict(color="lightblue")))
-    fig.add_trace(go.Scatter(x=forecast_index, y=conf.iloc[:, 1], name='Confianza Alta',
-                             line=dict(dash='dot'), fill='tonexty', marker=dict(color="lightblue")))
-    fig.update_layout(title="Predicción con Intervalos de Confianza")
+    
+    # Datos históricos
+    fig.add_trace(go.Scatter(
+        x=history.index,
+        y=history,
+        name='Histórico',
+        line=dict(color='blue')
+    ))
+    
+    # Predicción
+    fig.add_trace(go.Scatter(
+        x=forecast_index,
+        y=forecast,
+        name='Predicción',
+        line=dict(color='green')
+    ))
+    
+    # Intervalos de confianza
+    fig.add_trace(go.Scatter(
+        x=forecast_index,
+        y=conf.iloc[:, 0],
+        name='Confianza Baja',
+        line=dict(dash='dot', color='lightblue'),
+        fill=None
+    ))
+    
+    fig.add_trace(go.Scatter(
+        x=forecast_index,
+        y=conf.iloc[:, 1],
+        name='Confianza Alta',
+        line=dict(dash='dot', color='lightblue'),
+        fill='tonexty'
+    ))
+    
+    fig.update_layout(
+        title="Predicción con Intervalos de Confianza",
+        xaxis_title="Fecha",
+        yaxis_title="Precio",
+        template="plotly_white"
+    )
+    
     return fig

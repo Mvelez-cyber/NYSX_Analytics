@@ -8,11 +8,11 @@ import yfinance as yf
 st.set_page_config(page_title="NYSE Stock Forecast Dashboard", layout="wide")
 st.title("📈 NYSE Stock Forecast Dashboard")
 
-# Advertencia sobre datos simulados
-st.warning("""
-⚠️ **Nota Importante**: 
-Los datos históricos mostrados son simulados debido a limitaciones de la API gratuita.
-Las predicciones se basan en estos datos simulados y deben tomarse como referencia únicamente.
+# Advertencia sobre predicciones
+st.info("""
+ℹ️ **Nota Importante**: 
+Los datos históricos mostrados son reales y provienen de Yahoo Finance.
+Las predicciones se basan en modelos estadísticos y deben tomarse como referencia únicamente.
 """)
 
 # Buscar empresa
@@ -38,7 +38,7 @@ if company_name:
             symbol = selected_option.split(' - ')[0]
             
             try:
-                # Obtener información detallada de la empresa
+                # Obtener información detallada de la empresa usando yfinance
                 ticker = yf.Ticker(symbol)
                 info = ticker.info
                 

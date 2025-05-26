@@ -1,11 +1,7 @@
 streamlit
-pandas
-numpy
-matplotlib
+finnhub-python
 plotly
+pandas
 statsmodels
-joblib
-requests
-python-dotenv
-finnhub-python 
+websocket-client
 streamlit-extras

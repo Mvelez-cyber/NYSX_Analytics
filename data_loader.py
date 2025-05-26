@@ -1,27 +1,21 @@
-from config import API_KEY
-import requests
-import pandas as pd
-from config import API_KEY
-from datetime import datetime, timedelta
 import finnhub
-import os
+import pandas as pd
+from config import FINNHUB_API_KEY
+import requests
 
-finnhub_client = finnhub.Client(api_key=os.getenv("FINNHUB_API_KEY"))
+finnhub_client = finnhub.Client(api_key=FINNHUB_API_KEY)
 
-def get_stock_data(symbol):
-    now = int(datetime.now().timestamp())
-    last_year = int((datetime.now() - timedelta(days=365)).timestamp())
-    res = finnhub_client.stock_candles(symbol, 'D', last_year, now)
+def search_company(name):
+    try:
+        result = finnhub_client.symbol_lookup(name)
+        return result.get("result", [])
+    except Exception:
+        return []
 
-    if res['s'] != 'ok':
-        raise Exception("No se pudo obtener el historial")
-
-    df = pd.DataFrame({
-        'time': pd.to_datetime(res['t'], unit='s'),
-        'open': res['o'],
-        'high': res['h'],
-        'low': res['l'],
-        'close': res['c']
-    })
-    df.set_index('time', inplace=True)
-    return df
+def get_historical_data(symbol):
+    res = finnhub_client.stock_candle(symbol, 'D', 1617753600, 1704067200)
+    df = pd.DataFrame(res)
+    df['t'] = pd.to_datetime(df['t'], unit='s')
+    df.set_index('t', inplace=True)
+    df.rename(columns={'c': 'close', 'h': 'high', 'l': 'low', 'o': 'open'}, inplace=True)
+    return df[['open', 'high', 'low', 'close']]

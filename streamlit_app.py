@@ -30,7 +30,6 @@ if company_name:
         3. Asegúrate de que la empresa esté listada en NYSE o NASDAQ
         """)
     else:
-        # Crear un selector con información detallada
         options = [f"{m['symbol']} - {m['description']} ({m['exchange']})" for m in matches]
         selected_option = st.selectbox(
             "Selecciona la empresa:",
@@ -39,34 +38,27 @@ if company_name:
         )
         
         if selected_option:
-            # Extraer el símbolo de la opción seleccionada
             symbol = selected_option.split(' - ')[0]
-            
             try:
-                # Obtener información detallada de la empresa
                 ticker = yf.Ticker(symbol)
                 info = ticker.info
-                
                 if not info:
                     raise Exception("No se pudo obtener información de la empresa")
-                
-                # Obtener datos históricos y limpiar días vacíos
                 df = get_historical_data(symbol)
                 df = df.dropna(subset=['open', 'high', 'low', 'close'])
 
-                # Mostrar los datos de la empresa a la izquierda y el gráfico a la derecha en la misma fila
-                st.markdown("""
-                <div style='display: flex; flex-direction: row; gap: 32px; align-items: stretch; width: 100%;'>
-                    <div style='background: #18191A; padding: 40px 20px; border-radius: 24px; box-shadow: 0 4px 24px 0 rgba(0,0,0,0.25); color: white; font-size: 1.1rem; font-family: "Segoe UI", Arial, sans-serif; min-width: 320px; max-width: 400px; flex: 1; display: flex; flex-direction: column; justify-content: center;'>
+                # Usa st.columns para la disposición horizontal
+                col1, col2 = st.columns([1, 3])
+                with col1:
+                    st.markdown("""
+                    <div style='background: #18191A; padding: 40px 20px; border-radius: 24px; box-shadow: 0 4px 24px 0 rgba(0,0,0,0.25); color: white; font-size: 1.1rem; font-family: "Segoe UI", Arial, sans-serif; min-width: 220px; max-width: 400px; display: flex; flex-direction: column; justify-content: center;'>
                         <h2 style='color:white; margin-bottom: 2rem;'>Datos de la Empresa</h2>
                         <p style='font-size:1.2rem;'><b>Precio Actual:</b> ${:.2f} <span style='color:{}; font-size:1.1rem;'>{}</span></p>
                         <p style='font-size:1.1rem;'><b>Capitalización:</b> ${:.2f}B</p>
                         <p style='font-size:1.1rem;'><b>Volumen:</b> {:,}</p>
                         <p style='font-size:1.1rem;'><b>Sector:</b> {}</p>
                     </div>
-                    <div style='flex: 3; display: flex; flex-direction: column; justify-content: center;'>
-                        <div style='height: 100%;'>
-                """.format(
+                    """.format(
                         info.get('currentPrice', 0),
                         'red' if info.get('regularMarketChangePercent', 0) < 0 else 'lightgreen',
                         f"{info.get('regularMarketChangePercent', 0):.2f}%",
@@ -74,12 +66,8 @@ if company_name:
                         int(info.get('regularMarketVolume', 0)),
                         info.get('sector', 'N/A')
                     ), unsafe_allow_html=True)
-                st.plotly_chart(plot_candlestick(df), use_container_width=True)
-                st.markdown("""
-                        </div>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
+                with col2:
+                    st.plotly_chart(plot_candlestick(df), use_container_width=True)
 
                 # Gráfico de predicción al final, ocupando todo el ancho
                 st.markdown("---")

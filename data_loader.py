@@ -5,6 +5,7 @@ import finnhub
 from config import API_KEY
 import streamlit as st
 import plotly.graph_objects as go
+from visualization import plot_price_line  # Asegúrate de importar la nueva función
 
 # Inicializar cliente de Finnhub
 finnhub_client = finnhub.Client(api_key=API_KEY)
@@ -77,6 +78,35 @@ def plot_candlestick(df):
         )
     )
     
+    return fig
+
+def plot_price_line(df):
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=df.index,
+        y=df['close'],
+        mode='lines',
+        line=dict(color='purple', width=2),
+        name='Precio de Cierre'
+    ))
+
+    fig.update_layout(
+        title="Precio Histórico de Cierre",
+        xaxis_title="Fecha",
+        yaxis_title="Precio",
+        template="plotly_dark",  # Fondo oscuro
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)',
+        font=dict(color='white'),
+        xaxis=dict(
+            showgrid=False,
+            tickformat='%b %Y'
+        ),
+        yaxis=dict(
+            showgrid=True,
+            gridcolor='rgba(255,255,255,0.1)'
+        )
+    )
     return fig
 
 def plot_forecast_with_confidence(history, forecast, conf):
@@ -170,3 +200,7 @@ def plot_forecast_with_confidence(history, forecast, conf):
     )
     
     return fig
+
+# Mostrar datos históricos
+df = get_historical_data(symbol)
+st.plotly_chart(plot_price_line(df), use_container_width=True)

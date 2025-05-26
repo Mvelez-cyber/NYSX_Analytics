@@ -1,7 +1,9 @@
-streamlit==1.25.0
-requests==2.31.0
-plotly==5.20.0
-pandas==2.2.3
-joblib==1.2.0
-python-dotenv==1.0.1
-statsmodels==0.14.0
+streamlit
+pandas
+numpy
+matplotlib
+plotly
+statsmodels
+joblib
+requests
+python-dotenv

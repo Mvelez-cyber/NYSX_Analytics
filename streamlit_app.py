@@ -16,14 +16,19 @@ Las predicciones se basan en modelos estadísticos y deben tomarse como referenc
 """)
 
 # Buscar empresa
-company_name = st.text_input("🔍 Ingresa el nombre de la empresa (ej: Apple, Microsoft, Google):", "")
+company_name = st.text_input("🔍 Ingresa el nombre de la empresa o símbolo (ej: Apple, AAPL, Microsoft, MSFT):", "")
 
 if company_name:
     with st.spinner('Buscando empresas...'):
         matches = search_company(company_name)
 
     if not matches:
-        st.error("No se encontraron empresas. Intenta con otro nombre.")
+        st.error("""
+        No se encontraron empresas. Por favor:
+        1. Verifica que el nombre o símbolo sea correcto
+        2. Intenta con otro nombre o símbolo
+        3. Asegúrate de que la empresa esté listada en NYSE o NASDAQ
+        """)
     else:
         # Crear un selector con información detallada
         options = [f"{m['symbol']} - {m['description']} ({m['exchange']})" for m in matches]
@@ -38,9 +43,12 @@ if company_name:
             symbol = selected_option.split(' - ')[0]
             
             try:
-                # Obtener información detallada de la empresa usando yfinance
+                # Obtener información detallada de la empresa
                 ticker = yf.Ticker(symbol)
                 info = ticker.info
+                
+                if not info:
+                    raise Exception("No se pudo obtener información de la empresa")
                 
                 # Mostrar información de la empresa en columnas
                 col1, col2, col3, col4 = st.columns(4)
@@ -80,4 +88,10 @@ if company_name:
                 st.plotly_chart(plot_forecast_with_confidence(df['close'], *forecast), use_container_width=True)
 
             except Exception as e:
-                st.error(f"Error al obtener datos: {e}")
+                st.error(f"Error al obtener datos: {str(e)}")
+                st.info("""
+                Si el error persiste, intenta:
+                1. Verificar que el símbolo sea correcto
+                2. Esperar unos minutos y volver a intentar
+                3. Probar con otra empresa
+                """)

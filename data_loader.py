@@ -1,9 +1,9 @@
 import finnhub
 import pandas as pd
-from config import FINNHUB_API_KEY
+from config import API_KEY
 import requests
 
-finnhub_client = finnhub.Client(api_key=FINNHUB_API_KEY)
+finnhub_client = finnhub.Client(api_key=API_KEY)
 
 def search_company(name):
     try:

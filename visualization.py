@@ -74,6 +74,7 @@ def plot_forecast_with_confidence(history, forecast, conf):
     fig.add_trace(go.Scatter(
         x=history.index,
         y=history,
+        mode='lines',
         line=dict(color='purple', width=2),
         name='Histórico'
     ))
